@@ -1,14 +1,14 @@
 @echo off
-echo Stopping usermicroservice
-docker stop usermicroservice
-echo Deleting container usermicroservice
-docker rm usermicroservice
-echo Deleting image usermicroservice
-docker rmi usermicroservice
+echo Stopping edufyuserauthms
+docker stop edufyuserauthms
+echo Deleting container edufyuserauthms
+docker rm edufyuserauthms
+echo Deleting image edufyuserauthms
+docker rmi edufyuserauthms
 echo Running mvn package (skips tests)
 call mvn package -DskipTests
-echo Creating image usermicroservice
-docker build -t usermicroservice .
-echo Creating and running container usermicroservice
-docker run -d -p 9902:9902 --name usermicroservice --network edufy_network usermicroservice
+echo Creating image edufyuserauthms
+docker build -t edufyuserauthms .
+echo Creating and running container edufyuserauthms
+docker run -d -p 9903:9903 --name edufyuserauthms --network edufy_network edufyuserauthms
 echo Done!
