@@ -5,6 +5,8 @@ import com.example.edufyuserauthms.dto.LoginRequestDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,7 +47,7 @@ public class KeycloakLoginService {
                 "&username=" + loginRequest.getUsername() +
                 "&password=" + loginRequest.getPassword() +
                 "&client_secret=" + clientSecret;
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
+        HttpEntity< String> request = new HttpEntity<>(body, headers);
 
         try {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
@@ -91,6 +93,5 @@ public class KeycloakLoginService {
             return "Logout failed. error: " + e.getMessage();
         }
     }
-
 }
 

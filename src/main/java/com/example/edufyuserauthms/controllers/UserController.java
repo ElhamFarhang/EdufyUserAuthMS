@@ -25,8 +25,8 @@ public class UserController {
         String userId = keycloakUserService.createUser(request);
         keycloakUserService.assignRole(userId);
         Map<String, String> response = Map.of(
-                "userId", userId,
-                "message", "User created and assigned role 'user'"
+                "userId ", userId,
+                "message ", "User created and assigned role 'user'"
         );
         return ResponseEntity.ok(response);
     }

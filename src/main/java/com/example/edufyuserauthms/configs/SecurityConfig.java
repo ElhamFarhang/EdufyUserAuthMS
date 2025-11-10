@@ -31,6 +31,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation("http://keycinstance:8080/realms/edufy-realm");
+//        return JwtDecoders.fromIssuerLocation("http://host.docker.internal:8080/realms/edufy-realm");
+        return JwtDecoders.fromIssuerLocation("http://keycloak:8080/realms/edufy-realm");
     }
 }

@@ -22,6 +22,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequestDTO dto) {
+        System.out.println("Received DTO: " + dto);
         Map<String, Object> tokens = keycloakLoginService.login(dto);
         return ResponseEntity.ok(tokens);
     }

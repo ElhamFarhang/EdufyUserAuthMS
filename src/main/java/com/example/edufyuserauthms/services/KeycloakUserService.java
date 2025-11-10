@@ -73,7 +73,7 @@ public class KeycloakUserService {
 
             return userId;
         } else {
-            throw new RuntimeException("Failed to create user in Keycloak. Status: " + response.getStatusCode());
+            return "Failed to create user in Keycloak. Status: " + response.getStatusCode();
         }
     }
 
@@ -85,8 +85,8 @@ public class KeycloakUserService {
 
         Map<String, Object> roleBody = Map.of(
                 "id", roleId,
-                "name", roleName
-        );
+                "name", roleName);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
