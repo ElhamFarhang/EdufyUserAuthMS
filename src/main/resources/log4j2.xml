@@ -1,0 +1,35 @@
+
+<!--Elham - Log -->
+<Configuration status="info">
+
+    <properties>
+        <property name="layout"> %d %-5level - %m%n </property>
+    </properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout disableAnsi="false"
+                           pattern="%highlight{[%d] %-5level - %msg%n}{FATAL=blue, ERROR=red, WARN=yellow, INFO=green}"/>
+        </Console>
+
+        <File name="LogFile" fileName="logs/app.log">
+            <PatternLayout pattern="${layout}" />
+        </File>
+
+
+        <File name="FunctionalityLog" fileName="logs/functionality.log">
+            <PatternLayout pattern="${layout}"/>
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="LogFile" />
+        </Root>
+
+        <Logger name="functionality" level="info" additivity="false">
+            <AppenderRef ref="FunctionalityLog"/>
+        </Logger>
+    </Loggers>
+</Configuration>

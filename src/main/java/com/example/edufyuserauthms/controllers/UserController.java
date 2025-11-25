@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+//--------------------- Elham - UserController --------------
 @RestController
-@RequestMapping("/newuser")
+@RequestMapping("/edufy/newuser")
 public class UserController {
 
     private final KeycloakUserService keycloakUserService;
@@ -26,7 +27,7 @@ public class UserController {
         keycloakUserService.assignRole(userId);
         Map<String, String> response = Map.of(
                 "userId ", userId,
-                "message ", "User created and assigned role 'user'"
+                "message ", "User created and assigned role 'edufy_User'"
         );
         return ResponseEntity.ok(response);
     }

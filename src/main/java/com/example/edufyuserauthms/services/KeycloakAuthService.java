@@ -1,5 +1,6 @@
 package com.example.edufyuserauthms.services;
 
+import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+//--------------------- Elham - KeycloakAuthService --------------
 @Service
 public class KeycloakAuthService {
 
@@ -40,5 +42,14 @@ public class KeycloakAuthService {
             throw new RuntimeException("Failed to retrieve access token");
         }
         return (String) response.getBody().get("access_token");
+    }
+
+    public String extractSub(String token){
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return signedJWT.getJWTClaimsSet().getSubject();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not extract sub", e);
+        }
     }
 }

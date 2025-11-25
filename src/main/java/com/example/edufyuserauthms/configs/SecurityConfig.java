@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.web.SecurityFilterChain;
 
+//--------------------- Elham - SecurityConfig --------------
 @Configuration
 public class SecurityConfig {
 
@@ -17,10 +18,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers(HttpMethod.POST,"/user/login").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/user/logout").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/newuser/create").permitAll()
-                                .anyRequest().permitAll()
+                                .requestMatchers(HttpMethod.POST,"/edufy/**").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/edufy/user/logout").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/edufy/newuser/create").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 ->
                         oauth2
@@ -31,7 +32,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-//        return JwtDecoders.fromIssuerLocation("http://host.docker.internal:8080/realms/edufy-realm");
         return JwtDecoders.fromIssuerLocation("http://keycloak:8080/realms/edufy-realm");
     }
 }

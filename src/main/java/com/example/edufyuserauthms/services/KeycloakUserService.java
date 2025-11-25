@@ -2,6 +2,8 @@ package com.example.edufyuserauthms.services;
 
 
 import com.example.edufyuserauthms.dto.UserDTO;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +19,7 @@ import java.util.Map;
 @Service
 public class KeycloakUserService {
 
+    private static final Logger FUNCTIONALITY_LOGGER = LogManager.getLogger("functionality");
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${keycloak.base-url}")
@@ -63,17 +66,24 @@ public class KeycloakUserService {
         headers.setBearerAuth(token);
 
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<Void> response = restTemplate.postForEntity(url, httpEntity, Void.class);
-        if (response.getStatusCode().is2xxSuccessful() || response.getStatusCode().value() == 201) {
-            String location = response.getHeaders().getLocation().toString();
-            if (location == null) {
-                throw new RuntimeException("Failed to create user: Location header missing");
+        try {
+            ResponseEntity<Void> response = restTemplate.postForEntity(url, httpEntity, Void.class);
+            if (response.getStatusCode().is2xxSuccessful() || response.getStatusCode().value() == 201) {
+                String location = response.getHeaders().getLocation().toString();
+                if (location == null) {
+                    throw new RuntimeException("Failed to create user: Location header missing");
+                }
+                String userId = location.substring(location.lastIndexOf("/") + 1);
+                FUNCTIONALITY_LOGGER.info("User created successfully: username='{}', userId='{}'",request.getUsername(), userId);
+                return userId;
+            } else {
+                FUNCTIONALITY_LOGGER.warn("Failed to create user: username='{}'", request.getUsername());
+                return "Failed to create user in Keycloak. Status: " + response.getStatusCode();
             }
-            String userId = location.substring(location.lastIndexOf("/") + 1);
-
-            return userId;
-        } else {
-            return "Failed to create user in Keycloak. Status: " + response.getStatusCode();
+        } catch (Exception e) {
+            FUNCTIONALITY_LOGGER.error("Exception while creating user: username='{}', error='{}'",
+                    request.getUsername(), e.getMessage());
+            throw new RuntimeException("Error creating user in Keycloak: " + e.getMessage(), e);
         }
     }
 
@@ -91,7 +101,14 @@ public class KeycloakUserService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
         HttpEntity<List<Map<String, Object>>> roleRequest = new HttpEntity<>(List.of(roleBody), headers);
-        restTemplate.postForEntity(roleUrl, roleRequest, Void.class);
-
+        try {
+            restTemplate.postForEntity(roleUrl, roleRequest, Void.class);
+            FUNCTIONALITY_LOGGER.info("Role '{}' (ID: {}) successfully assigned to user '{}'",
+                    roleName, roleId, userId);
+        }catch (Exception e) {
+            FUNCTIONALITY_LOGGER.error("Exception while assigning role '{}' to user '{}'. Error: {}",
+                    roleName, userId, e.getMessage());
+            throw new RuntimeException("Error assigning role: " + e.getMessage(), e);
+        }
     }
 }

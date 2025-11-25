@@ -2,20 +2,21 @@ package com.example.edufyuserauthms.services;
 
 
 import com.example.edufyuserauthms.dto.LoginRequestDTO;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
 
+//--------------------- Elham - KeycloakLoginService --------------
 @Service
 public class KeycloakLoginService {
 
+    private static final Logger FUNCTIONALITY_LOGGER = LogManager.getLogger("functionality");
     private final KeycloakAuthService keycloakAuthService;
 
     public KeycloakLoginService(KeycloakAuthService keycloakAuthService) {
@@ -52,16 +53,22 @@ public class KeycloakLoginService {
         try {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                Map<String, Object> tokens = response.getBody();
+                String accessToken = (String) tokens.get("access_token");
+                String sub = keycloakAuthService.extractSub(accessToken);
+                FUNCTIONALITY_LOGGER.info("User with ID '{}' successfully logged in", sub);
                 return response.getBody();
             } else {
+                FUNCTIONALITY_LOGGER.warn("Login failed for username '{}'", loginRequest.getUsername());
                 throw new RuntimeException("Error: Received non-OK status from Keycloak: " + response.getStatusCode() + " - " + response.getBody());
             }
         } catch (Exception e) {
+            FUNCTIONALITY_LOGGER.error("Login error for username '{}'", loginRequest.getUsername());
             throw new RuntimeException("Error communicating with Keycloak: " + e.getMessage(), e);
         }
     }
 
-    public String logoutByEmail(String email){
+    public String logout(String email){
 
         String adminToken = keycloakAuthService.getAccessToken();
         String url = keycloakBaseUrl + "/admin/realms/" + realm + "/users?email=" + email;
@@ -73,6 +80,7 @@ public class KeycloakLoginService {
         ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
 
         if (response.getBody() == null || response.getBody().isEmpty()) {
+            FUNCTIONALITY_LOGGER.warn("Logout attempt failed: No user found with email '{}'", email);
             return "No user found with email: " + email;
         }
 
@@ -84,12 +92,15 @@ public class KeycloakLoginService {
         try {
         ResponseEntity<Void> logoutResponse = restTemplate.exchange(logoutUrl, HttpMethod.POST, entity, Void.class);
             if (logoutResponse.getStatusCode().is2xxSuccessful() || logoutResponse.getStatusCode() == HttpStatus.NO_CONTENT) {
+                FUNCTIONALITY_LOGGER.info("User '{}' (ID: {}) logged out successfully", email, userId);
                 return "User " + email + " has been logged out successfully";
             } else {
-        return "Logout request sent but received status: " + logoutResponse.getStatusCode();
+                FUNCTIONALITY_LOGGER.warn("Logout request sent for '{}' (ID: {}) but got status: {}", email, userId, logoutResponse.getStatusCode());
+                return "Logout request sent but received status: " + logoutResponse.getStatusCode();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            FUNCTIONALITY_LOGGER.warn("Logout failed for '{}'", email);
             return "Logout failed. error: " + e.getMessage();
         }
     }

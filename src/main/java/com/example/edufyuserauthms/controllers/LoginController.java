@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+//--------------------- Elham - LoginController --------------
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/edufy/user")
 public class LoginController {
 
     private final KeycloakLoginService keycloakLoginService;
@@ -28,8 +29,8 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logoutByEmail(@RequestBody LogoutRequestDTO request) {
-        String result = keycloakLoginService.logoutByEmail(request.getEmail());
+    public ResponseEntity<String> logout(@RequestBody LogoutRequestDTO request) {
+        String result = keycloakLoginService.logout(request.getEmail());
         return ResponseEntity.ok(result);
     }
 
