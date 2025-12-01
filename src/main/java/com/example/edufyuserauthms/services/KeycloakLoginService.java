@@ -23,7 +23,7 @@ public class KeycloakLoginService {
         this.keycloakAuthService = keycloakAuthService;
     }
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Value("${keycloak.base-url}")
     private String keycloakBaseUrl;

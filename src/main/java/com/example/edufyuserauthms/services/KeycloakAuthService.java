@@ -44,7 +44,7 @@ public class KeycloakAuthService {
         return (String) response.getBody().get("access_token");
     }
 
-    public String extractSub(String token){
+    public String extractSub(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             return signedJWT.getJWTClaimsSet().getSubject();

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//--------------------- Elham - KeycloakUserService --------------
 @Service
 public class KeycloakUserService {
 
@@ -70,9 +71,6 @@ public class KeycloakUserService {
             ResponseEntity<Void> response = restTemplate.postForEntity(url, httpEntity, Void.class);
             if (response.getStatusCode().is2xxSuccessful() || response.getStatusCode().value() == 201) {
                 String location = response.getHeaders().getLocation().toString();
-                if (location == null) {
-                    throw new RuntimeException("Failed to create user: Location header missing");
-                }
                 String userId = location.substring(location.lastIndexOf("/") + 1);
                 FUNCTIONALITY_LOGGER.info("User created successfully: username='{}', userId='{}'",request.getUsername(), userId);
                 return userId;
